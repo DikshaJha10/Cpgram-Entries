@@ -1,0 +1,64 @@
+using System;
+using System.Data;
+using System.Data.Odbc;
+using System.Collections;
+using System.Configuration;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.UI.WebControls.WebParts;
+using System.UI.HtmlControls;
+
+public partial class login : System.Web.UI.Page
+{
+    OdbcConnection con;
+    OdbcDataAdapter da;
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (textBox1.text == "")||(textBox2.text == "")
+      {
+            Label3.Visible = true;
+            Label3.text = "cant be null";
+
+        }
+    else
+        {
+            da = new OdbcDataAdapter("SELECT * FROM cpgrams_entries WHERE SAIL slno='" + textBox1.Text.ToString().Trim() + "'and password='" + textBox2.Text.ToString()
+                .Trim() + "'", con);
+            da = new DataSet();
+            da.Fill(ds, cpgrams_entries);
+            int n = da.Tables["cpgrams_entries"].Rows.count;
+            if (n != 1)
+            {
+                Label3.Visible = true;
+                Label3.text = "wrong user id or password"
+                    textBox1.text = "";
+                textBox2.text = "";
+            }
+            else
+            {
+                DateTime dn = DataTime.Now;
+                String s = DataSet.Tables["cpgrams_entries"].Rows[0][5].ToString();
+                if (s != "")
+                    DateTime.Parse(s.ToString().Trim());
+                if (dn > dt)
+                {
+                    Label3.Visible = true;
+                    Label3.Text = "you are not a member at this time";
+                }
+                else
+                {
+                    Session["UID"] = ds.Tables["cpgrams_entries"].Rows[0][1].ToString();
+                    Response.redirect("name_of_applicant.aspx");
+                }
+            }
+         else
+            {
+                Session["UID"] = ds.Tables["cpgrams_entries"].Rows[0][1].ToString();
+                Response.redirect("name_of_applicant.aspx");
+            }
+
+        }
+    }
+}
